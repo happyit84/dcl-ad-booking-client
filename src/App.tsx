@@ -1,37 +1,33 @@
 import { useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
+//import { Web3 } from 'web3'
+//import { Contract } from "web3-eth-contract"
+import { SceneScheduleABI } from "./SceneSchedule"
 
-/*function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}*/
+type SchedulesProps = {
+  ethAddress: string;
+}
+
+const Schedules: React.FC<SchedulesProps> = ({ethAddress}) => {
+  //const web3 = new Web3(Web3.)
+  
+  const contract: Contract = new web3.eth.Contract()
+  return (<div></div>)
+}
+
+
 const App: React.FC = () => {
   const [isMetamaskInstalled, setIsMetamaskInstalled] = useState<boolean>(false);
-  const [ethereumAccount, setEthereumAccount] = useState<string | null>(null);
+  const [ethAddress, setEthereumAccount] = useState<string | null>(null);
 
   useEffect(() => {
     if((window as any).ethereum) {
       // check if Metamask wallet is installed
       setIsMetamaskInstalled(true);
     }
-  }, []);
+  }, [] // empty brackets means: call only once when the page is loaded
+  );
 
   // Does the User have an Ethereum wallet/account?
   async function connectMetamaskWallet(): Promise<void> {
@@ -42,13 +38,14 @@ const App: React.FC = () => {
     })
     .then((accounts : string[]) => {
       setEthereumAccount(accounts[0]);
+      
     })
     .catch((error: any) => {
       alert('Something went wrong: ${error}');
     });
   }
 
-  if (ethereumAccount === null) {
+  if (ethAddress === null) {
     return (
       <div className="App App-header">
         {
@@ -68,11 +65,13 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo"/>
-        <p>ETH wallet connected as: {ethereumAccount}</p>
+        {/* <img src={logo} className="App-logo" alt="logo"/> */}
+        <p>ETH wallet connected as: {ethAddress}</p>
       </header>
-    </div>
+      <Schedules ethAddress={ethAddress}></Schedules>
+    </div>    
   )
 }
+
 
 export default App;
