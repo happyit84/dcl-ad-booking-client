@@ -7,6 +7,7 @@ import { DisplayMask } from "./DisplayMask";
 import { Button } from "./Button";
 import { formatEther } from "@ethersproject/units"
 import { BigNumberish } from '@ethersproject/bignumber';
+import { SceneScheduleDetail } from "./components/SceneScheduleDetail"
 
 function App() {
   const [ethBalance, setEthBalance] = useState<number | undefined>(undefined)
@@ -88,6 +89,8 @@ function App() {
         )}
         <DisplayMask active={active} installed={installed} account={account} />
         <div>{ethBalance}</div>
+        <div>chain id: {chainId}</div>
+        <SceneScheduleDetail id={BigInt(0)} />
       </header>
     </div>
   );
