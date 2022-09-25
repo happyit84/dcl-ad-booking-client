@@ -1,15 +1,13 @@
-import {FC} from 'react';
+import React from 'react';
+//import MultiDiv from './MultiDiv'
 
-interface SceneScheduleDetailProps {
-  id : bigint
+/*interface MultiDivProps {
+  children: React.ReactNode | React.ReactNode[]
+  //children: JSX.Element | JSX.Element[]
 }
 
-export const SceneScheduleDetail : FC<SceneScheduleDetailProps> = ({id}) => {
-  
-  return (
-    <div>
-      id 
-    </div>
-  )
-
+function MultiDiv(props: MultiDivProps) {
+  return <div>{props.children}</div>
 }
+*/
+

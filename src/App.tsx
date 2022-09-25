@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, FC} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { useWeb3React } from "@web3-react/core";
@@ -7,7 +7,17 @@ import { DisplayMask } from "./DisplayMask";
 import { Button } from "./Button";
 import { formatEther } from "@ethersproject/units"
 import { BigNumberish } from '@ethersproject/bignumber';
-import { SceneScheduleDetail } from "./components/SceneScheduleDetail"
+//import { SceneScheduleDetail } from "./components/SceneScheduleDetail"
+
+type SceneScheduleDetailProps = {
+  id: number
+}
+
+const SceneScheduleDetail: FC<SceneScheduleDetailProps> = ({id}) => {
+  return (
+    <div>뭐야 이게 {id}</div>
+  )
+}
 
 function App() {
   const [ethBalance, setEthBalance] = useState<number | undefined>(undefined)
@@ -90,7 +100,7 @@ function App() {
         <DisplayMask active={active} installed={installed} account={account} />
         <div>{ethBalance}</div>
         <div>chain id: {chainId}</div>
-        <SceneScheduleDetail id={BigInt(0)} />
+        <SceneScheduleDetail id={6} />
       </header>
     </div>
   );
