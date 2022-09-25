@@ -5,10 +5,15 @@ import { useWeb3React } from "@web3-react/core";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { DisplayMask } from "./DisplayMask";
 import { Button } from "./Button";
+import { formatEther } from "@ethersproject/units"
+import { BigNumberish } from '@ethersproject/bignumber';
 
 function App() {
+  const [ethBalance, setEthBalance] = useState<number | undefined>(undefined)
   const [installed, setInstalled] = useState<boolean>(false);
-  const { active, account, activate, deactivate } = useWeb3React();
+  const { active, account, activate, deactivate, library, chainId } = useWeb3React();
+  const provider = library
+
   const injected = new InjectedConnector({
     supportedChainIds: [1, 3, 4, 5, 42]
   });
@@ -53,6 +58,14 @@ function App() {
     connectWalletOnPageLoad();
   }, [activate]);
 
+  useEffect(() => {
+    if (active && account) {
+      provider?.getBalance(account).then((result: BigNumberish) => {
+        setEthBalance(Number(formatEther(result)))
+      })
+    }
+  })
+
   const downloadApp = () =>
     window.open(
       "https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn/related?hl=en"
@@ -74,6 +87,7 @@ function App() {
           <Button onClick={connect}>Connect to MetaMask</Button>
         )}
         <DisplayMask active={active} installed={installed} account={account} />
+        <div>{ethBalance}</div>
       </header>
     </div>
   );
