@@ -1,6 +1,6 @@
-export function getScheduleAddress(chainId: number) : string | undefined {
+export function getSceneSchedulerAddress(chainId: number) : string {
 	if(chainId == 3)	return "0x540d803Dc1565bcb91b3D0BB50Fa1ab6196dfe5f"; // Ropsten Test Network
-	return undefined;
+	return "";
 }
 export const SceneSchedulerABI = [
 	{

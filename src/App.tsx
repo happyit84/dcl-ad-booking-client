@@ -1,4 +1,4 @@
-import {useEffect, useState, FC} from 'react';
+import {useEffect, useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import { useWeb3React } from "@web3-react/core";
@@ -90,7 +90,7 @@ function App() {
         <DisplayMask active={active} installed={installed} account={account} />
         <div>{ethBalance}</div>
         <div>chain id: {chainId}</div>
-        <SceneScheduleDetail id={6} />
+        <SceneScheduleDetail library={library} chainId={chainId} id={6} />
       </header>
     </div>
   );
