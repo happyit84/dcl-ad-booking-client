@@ -1,13 +1,16 @@
-import React from 'react';
-//import MultiDiv from './MultiDiv'
+import {FC} from 'react';
+import MultiDiv from './MultiDiv'
 
-/*interface MultiDivProps {
-  children: React.ReactNode | React.ReactNode[]
-  //children: JSX.Element | JSX.Element[]
+
+type SceneScheduleDetailProps = {
+  id: number
 }
 
-function MultiDiv(props: MultiDivProps) {
-  return <div>{props.children}</div>
+export const SceneScheduleDetail: FC<SceneScheduleDetailProps> = ({id}) => {
+  return (
+    <MultiDiv>
+      <div>뭐야 이게1 = {id}</div>
+      <div>뭐야 이게2 = {id}</div>
+    </MultiDiv>
+  )
 }
-*/
-

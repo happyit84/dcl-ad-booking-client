@@ -7,17 +7,7 @@ import { DisplayMask } from "./DisplayMask";
 import { Button } from "./Button";
 import { formatEther } from "@ethersproject/units"
 import { BigNumberish } from '@ethersproject/bignumber';
-//import { SceneScheduleDetail } from "./components/SceneScheduleDetail"
-
-type SceneScheduleDetailProps = {
-  id: number
-}
-
-const SceneScheduleDetail: FC<SceneScheduleDetailProps> = ({id}) => {
-  return (
-    <div>뭐야 이게 {id}</div>
-  )
-}
+import { SceneScheduleDetail } from "./components/SceneScheduleDetail"
 
 function App() {
   const [ethBalance, setEthBalance] = useState<number | undefined>(undefined)
