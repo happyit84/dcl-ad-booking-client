@@ -7,7 +7,7 @@ import { DisplayMask } from "./DisplayMask";
 import { Button } from "./Button";
 import { formatEther } from "@ethersproject/units"
 import { BigNumberish } from '@ethersproject/bignumber';
-import { SceneScheduleDetail } from "./components/SceneScheduleDetail"
+import { SceneScheduleNow } from "./components/SceneScheduleNow"
 
 function App() {
   const [ethBalance, setEthBalance] = useState<number | undefined>(undefined)
@@ -74,23 +74,19 @@ function App() {
   
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        
-        { !installed ? (
+      <header className="App-header">                
+      { !installed ? (
           <Button onClick={downloadApp}>Install MetaMask (Not implemented)</Button>
         ) : active ? (
           <Button onClick={disconnect}>Disconnect</Button>
         ) : (
           <Button onClick={connect}>Connect to MetaMask</Button>
-        )}
-        <DisplayMask active={active} installed={installed} account={account} />
-        <div>{ethBalance}</div>
+        )}        
+        <DisplayMask active={active} installed={installed} account={account} />        
+        <SceneScheduleNow library={library} chainId={chainId} />        
+        <br/>
+        <div>ETH: {ethBalance}</div>
         <div>chain id: {chainId}</div>
-        <SceneScheduleDetail library={library} chainId={chainId} id={6} />
       </header>
     </div>
   );
