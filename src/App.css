@@ -50,10 +50,14 @@ input.url{
   width:90%;
 }
 
-div.MultiDiv{
+.w80{
   width: 80%;
 }
 
 .error {
   color: red;
+}
+
+.success {
+  color: green;
 }

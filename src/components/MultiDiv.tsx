@@ -5,7 +5,7 @@ interface MultiDivProps {
 }
 
 function MultiDiv(props: MultiDivProps) {
-  return <div className="MultiDiv">{props.children}</div>
+  return <div>{props.children}</div>
 }
 
 export default MultiDiv;

@@ -20,8 +20,11 @@ export const CreateSchedule: FC<CreateScheduleProps> = ({account, library, chain
   const [endDT, setEndDT] = useState<Date|null>()
   const [imgUrl, setImgUrl] = useState<string>()
   const [errorMsg, setErrorMsg] = useState<string>()
+  const [successMsg, setSuccessMsg] = useState<string>()
 
   const createSchedule = async () => {
+    setErrorMsg("")
+    setSuccessMsg("")
     if (!imgUrl)
     {
       setErrorMsg("image URL is empty. You have to set image URL.")
@@ -65,12 +68,13 @@ export const CreateSchedule: FC<CreateScheduleProps> = ({account, library, chain
 
       const feePerSecond = parseInt(r_feePerSecond);      
       const ethWei = (tsEnd - tsStart)*feePerSecond;
-      const r = await contract.createSchedule(tsStart, tsEnd, dataEncoded)//.send({from: account, value: ethWei})
+      const r = await contract.createSchedule(tsStart, tsEnd, dataEncoded, {value: ethWei})//.send({from: account, value: ethWei})
       console.log("call createSchedule()")
       console.log(r)
+      setSuccessMsg("Succeded to make reservation!")
     } catch (error) {
       setErrorMsg(""+error)
-    }    
+    }
   }
 
   function handleChange(event : any) {
@@ -78,46 +82,49 @@ export const CreateSchedule: FC<CreateScheduleProps> = ({account, library, chain
   }
   
   return (
-    <MultiDiv>
-      <h1>        
-        Make Reservation
-      </h1>      
-      <table>
-        <tbody>
-          <td>From</td>
-          <td>
-          <DatePicker
-            selected={startDT}
-            onChange={(date) => setStartDT(date)}
-            showTimeSelect
-            timeFormat="HH:00 aa"
-            timeIntervals = {60}
-            timeCaption="Time"
-            dateFormat="yyyy-MM-dd h:00 aa"
-          />
-          </td>
-          <td>--&gt; To</td>
-          <td></td>
-          <DatePicker 
-            selected={endDT}
-            onChange={(date) => setEndDT(date)}
-            showTimeSelect
-            timeFormat="HH:00 aa"
-            timeIntervals = {60}
-            timeCaption="Time"
-            dateFormat="yyyy-MM-dd h:00 aa"
-          />
-        </tbody>
-      </table>
-      <label>Image URL: 
-        <input className="url" type="text" name="Image URL" onChange={handleChange} value={imgUrl}/>
-      </label><br/>
-      <br/>
-      <a href={imgUrl} target="_blank"><img src={imgUrl} /></a>
-      <br/>
-      <div className="error">{errorMsg}</div>
-      <br/>
-      <Button onClick={createSchedule}>Make Reservation</Button>
-    </MultiDiv>
+    <div className="w80">
+      <MultiDiv>
+        <h1>        
+          Make Reservation
+        </h1>      
+        <table>
+          <tbody>
+            <td>From</td>
+            <td>
+            <DatePicker
+              selected={startDT}
+              onChange={(date) => setStartDT(date)}
+              showTimeSelect
+              timeFormat="HH:00 aa"
+              timeIntervals = {60}
+              timeCaption="Time"
+              dateFormat="yyyy-MM-dd h:00 aa"
+            />
+            </td>
+            <td>--&gt; To</td>
+            <td></td>
+            <DatePicker 
+              selected={endDT}
+              onChange={(date) => setEndDT(date)}
+              showTimeSelect
+              timeFormat="HH:00 aa"
+              timeIntervals = {60}
+              timeCaption="Time"
+              dateFormat="yyyy-MM-dd h:00 aa"
+            />
+          </tbody>
+        </table>
+        <label>Image URL: 
+          <input className="url" type="text" name="Image URL" onChange={handleChange} value={imgUrl}/>
+        </label><br/>
+        <br/>
+        <a href={imgUrl} target="_blank"><img src={imgUrl} /></a>
+        <br/>
+        <div className="error">{errorMsg}</div>
+        <div className="success">{successMsg}</div>
+        <br/>
+        <Button onClick={createSchedule}>Make Reservation</Button>
+      </MultiDiv>
+    </div>
   )
 }

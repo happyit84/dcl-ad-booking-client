@@ -62,7 +62,7 @@ export const SceneScheduleNow: FC<SceneScheduleNowProps> = ({library, chainId}) 
       console.log("call getScheduleNow()")
       fetchData()
     }
-  },[])
+  })
 
   return (
     <MultiDiv>      
