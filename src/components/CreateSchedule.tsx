@@ -3,21 +3,21 @@ import MultiDiv from './MultiDiv'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import {getSceneSchedulerAddress, SceneSchedulerABI as abi} from '../abi/SceneSchedulerABI'
-import { Web3Provider } from '@ethersproject/providers';
 import {Contract} from "@ethersproject/contracts";
 import '../App.css'
 import { Button } from "../Button";
 
-interface BookScheduleProps {
+interface CreateScheduleProps {
+  account: string | null | undefined,
   library: any,
   chainId: number | undefined,
 }
 
-export const CreateSchedule: FC<BookScheduleProps> = ({library, chainId}) => {  
+export const CreateSchedule: FC<CreateScheduleProps> = ({account, library, chainId}) => {  
   const _chainId: number = chainId == undefined ? 0 : chainId
 
-  const [startDT, setStartDT] = useState<Date|null>(new Date())
-  const [endDT, setEndDT] = useState<Date|null>(new Date())
+  const [startDT, setStartDT] = useState<Date|null>()
+  const [endDT, setEndDT] = useState<Date|null>()
   const [imgUrl, setImgUrl] = useState<string>()
   const [errorMsg, setErrorMsg] = useState<string>()
 
@@ -36,13 +36,13 @@ export const CreateSchedule: FC<BookScheduleProps> = ({library, chainId}) => {
 
     var tsStart:number = 0
     var tsEnd:number = 0
-    if (startDT !== null)
+    if (startDT !== null && startDT !== undefined)
     {
       tsStart = Math.floor(startDT.getTime() / 1000)
       console.log(tsStart)
       console.log(startDT?.toLocaleDateString() + " " + startDT?.toLocaleTimeString())
     }    
-    if (endDT !== null)
+    if (endDT !== null && endDT !== undefined)
     {
       tsEnd = Math.floor(endDT.getTime() / 1000)
       console.log(tsEnd)
@@ -59,7 +59,13 @@ export const CreateSchedule: FC<BookScheduleProps> = ({library, chainId}) => {
     console.log('dataEncoded', dataEncoded)
 
     try {
-      const r = await contract.createSchedule(tsStart, tsEnd, dataEncoded)
+      const r_feePerSecond = await contract.getFeePerSecond()
+      console.log('r1=')
+      console.log(r_feePerSecond)
+
+      const feePerSecond = parseInt(r_feePerSecond);      
+      const ethWei = (tsEnd - tsStart)*feePerSecond;
+      const r = await contract.createSchedule(tsStart, tsEnd, dataEncoded)//.send({from: account, value: ethWei})
       console.log("call createSchedule()")
       console.log(r)
     } catch (error) {

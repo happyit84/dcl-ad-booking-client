@@ -99,7 +99,7 @@ function App() {
         <DisplayMask active={active} installed={installed} account={account} />
         <div>{currentDT}</div>
         <div className="App"><hr/></div>
-        <CreateSchedule library={library} chainId={chainId} />
+        <CreateSchedule account={account} library={library} chainId={chainId} />
         <div className="App"><hr/></div>
         <SceneScheduleNow library={library} chainId={chainId} />
         <div className="App"><hr/></div>
