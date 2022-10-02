@@ -19,15 +19,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  //justify-content: center;
   font-size: calc(10px + 1vmin);
-  color: black;
-  
+  color: black;  
 }
 
 .App-link {
-  color: #61dafb;
-  
+  color: #61dafb;  
 }
 
 @keyframes App-logo-spin {
@@ -37,4 +35,25 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+div .App{
+  width: 100%;
+}
+
+h1 {
+  color:dimgray;
+  font-size: 30px
+}
+
+input.url{
+  width:90%;
+}
+
+div.MultiDiv{
+  width: 80%;
+}
+
+.error {
+  color: red;
 }

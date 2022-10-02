@@ -8,11 +8,13 @@ import { Button } from "./Button";
 import { formatEther } from "@ethersproject/units"
 import { BigNumberish } from '@ethersproject/bignumber';
 import { SceneScheduleNow } from "./components/SceneScheduleNow"
+import {CreateSchedule} from './components/CreateSchedule'
 
 function App() {
   const [ethBalance, setEthBalance] = useState<number | undefined>(undefined)
-  const [installed, setInstalled] = useState<boolean>(false);
-  const { active, account, activate, deactivate, library, chainId } = useWeb3React();
+  const [installed, setInstalled] = useState<boolean>(false)
+  const [currentDT, setCurrentDT] = useState<string>()
+  const { active, account, activate, deactivate, library, chainId } = useWeb3React()
   const provider = library
 
   const injected = new InjectedConnector({
@@ -36,6 +38,18 @@ function App() {
       console.log(ex);
     }
   };
+
+  
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const dt = new Date()
+      setCurrentDT(dt.toLocaleDateString() + " " + dt.toLocaleTimeString())
+    }, 1000)
+
+    return () => {
+      //clearInterval(timer)
+    }
+  },[])
 
   useEffect(() => {
     const { ethereum }: any = window;
@@ -65,7 +79,7 @@ function App() {
         setEthBalance(Number(formatEther(result)))
       })
     }
-  })
+  },[account])
 
   const downloadApp = () =>
     window.open(
@@ -74,17 +88,21 @@ function App() {
   
   return (
     <div className="App">
-      <header className="App-header">                
+      <header className="App-header">
       { !installed ? (
           <Button onClick={downloadApp}>Install MetaMask (Not implemented)</Button>
         ) : active ? (
           <Button onClick={disconnect}>Disconnect</Button>
         ) : (
           <Button onClick={connect}>Connect to MetaMask</Button>
-        )}        
-        <DisplayMask active={active} installed={installed} account={account} />        
-        <SceneScheduleNow library={library} chainId={chainId} />        
-        <br/>
+        )}
+        <DisplayMask active={active} installed={installed} account={account} />
+        <div>{currentDT}</div>
+        <div className="App"><hr/></div>
+        <CreateSchedule library={library} chainId={chainId} />
+        <div className="App"><hr/></div>
+        <SceneScheduleNow library={library} chainId={chainId} />
+        <div className="App"><hr/></div>
         <div>ETH: {ethBalance}</div>
         <div>chain id: {chainId}</div>
       </header>

@@ -1,21 +1,7 @@
 import {FC, useEffect, useState} from 'react';
-import { getSceneSchedulerAddress } from '../abi/SceneSchedulerABI';
 import MultiDiv from './MultiDiv'
-import {SceneSchedulerABI as abi} from '../abi/SceneSchedulerABI'
-import { Web3Provider } from '@ethersproject/providers';
+import {getSceneSchedulerAddress, SceneSchedulerABI as abi} from '../abi/SceneSchedulerABI'
 import {Contract} from "@ethersproject/contracts";
-import { formatEther } from '@ethersproject/units';
-
-const fetcher = (library: Web3Provider | undefined, abi:any) => (...args:any) => {
-  if (!library) return
-
-  const [arg1, arg2, ...params] = args
-  const address = arg1
-  const method = arg2
-  const contract = new Contract(address, abi, library)
-  return contract[method](...params)
-}
-
 
 interface SceneScheduleNowProps {
   library: any,
@@ -24,30 +10,24 @@ interface SceneScheduleNowProps {
 
 export const SceneScheduleNow: FC<SceneScheduleNowProps> = ({library, chainId}) => 
 {
-  const _chainId: number = chainId == undefined ? 0 : chainId
+  const _chainId: number = chainId === undefined ? 0 : chainId
   
   const [scheduleExist, setScheduleExist] = useState<boolean>(false)
   const [id, setId] = useState<number>(0)
-  //const [startTimestamp, setStartTimestamp] = useState<number>(0)
   const [startDT, setStartDT] = useState<string>()
   const [endDT, setEndDT] = useState<string>()
-  //const [endTimestamp, setEndtimestamp] = useState<number>(0)
   const [booker, setBooker]= useState<string>("")
-  //const [dataVersion, setDataVersion] = useState<number>(0)
-  //const [img, setImg] = useState<string>("")
   const [dataVersion, setDataVersion] = useState<number>()
   const [dataImg, setDataImg] = useState<string>()
   
   useEffect(() => {
     const contractAddress = getSceneSchedulerAddress(_chainId)
-    if (contractAddress != "") {
+    if (contractAddress !== "") {
       const contract = new Contract(contractAddress, abi, library.getSigner())
       
       const fetchData = async () => {
-        //const result = await contract.getScheduleDetail(6)
         const r = await contract.getScheduleNow()
-        //console.log(result)
-        console.log(r)
+        //console.log(r)
         setScheduleExist(r.scheduleExist && !r.removed)
         if (scheduleExist)
         {
@@ -77,18 +57,16 @@ export const SceneScheduleNow: FC<SceneScheduleNowProps> = ({library, chainId}) 
           setDataVersion(dataJson.version)
           setDataImg(dataJson.img)
         }
-        
-        //setStartTimeStamp(parseInt(result.startTimestamp))
       }
 
       console.log("call getScheduleNow()")
       fetchData()
     }
-  })
+  },[])
 
   return (
-    <MultiDiv>   
-      <div>--------- Present Schedule ---------</div>
+    <MultiDiv>      
+      <h1>Present Schedule</h1>
       {scheduleExist ?
         <MultiDiv>
           <div>id: {id}</div>
