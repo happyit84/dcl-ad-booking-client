@@ -1,17 +1,12 @@
 import {FC, useEffect, useState} from 'react';
 import MultiDiv from './MultiDiv'
-import {getSceneSchedulerAddress, SceneSchedulerABI as abi} from '../abi/SceneSchedulerABI'
 import {Contract} from "@ethersproject/contracts";
 
 interface SceneScheduleNowProps {
-  library: any,
-  chainId: number | undefined,
+  contract: Contract | undefined
 }
 
-export const SceneScheduleNow: FC<SceneScheduleNowProps> = ({library, chainId}) => 
-{
-  const _chainId: number = chainId === undefined ? 0 : chainId
-  
+export const SceneScheduleNow: FC<SceneScheduleNowProps> = ({contract}) => {
   const [scheduleExist, setScheduleExist] = useState<boolean>(false)
   const [id, setId] = useState<number>(0)
   const [startDT, setStartDT] = useState<string>()
@@ -21,15 +16,14 @@ export const SceneScheduleNow: FC<SceneScheduleNowProps> = ({library, chainId}) 
   const [dataImg, setDataImg] = useState<string>()
   
   useEffect(() => {
-    const contractAddress = getSceneSchedulerAddress(_chainId)
-    if (contractAddress !== "") {
-      const contract = new Contract(contractAddress, abi, library.getSigner())
-      
+    console.log("SceneScheduleNow.tsx > useEffect[]")
+    if (contract) {      
       const fetchData = async () => {
+        console.log("SceneScheduleNow.tsx > useEffect[] > getScheduleNow()")
         const r = await contract.getScheduleNow()
-        //console.log(r)
-        setScheduleExist(r.scheduleExist && !r.removed)
-        if (scheduleExist)
+        console.log("SceneScheduleNow.tsx > useEffect[] > r =", r)
+        const _scheduleExist = r.scheduleExist && !r.removed        
+        if (_scheduleExist)
         {
           var language;
           if (window.navigator.languages) {
@@ -56,16 +50,17 @@ export const SceneScheduleNow: FC<SceneScheduleNowProps> = ({library, chainId}) 
           const dataJson = JSON.parse(dataString)          
           setDataVersion(dataJson.version)
           setDataImg(dataJson.img)
+
+          setScheduleExist(_scheduleExist)
         }
       }
 
-      console.log("call getScheduleNow()")
       fetchData()
     }
-  })
+  }, [])
 
   return (
-    <MultiDiv>      
+    <MultiDiv>
       <h1>Present Schedule</h1>
       {scheduleExist ?
         <MultiDiv>

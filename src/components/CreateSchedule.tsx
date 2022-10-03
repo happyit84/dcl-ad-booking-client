@@ -2,19 +2,15 @@ import {FC, useState, useEffect} from 'react'
 import MultiDiv from './MultiDiv'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import {getSceneSchedulerAddress, SceneSchedulerABI as abi} from '../abi/SceneSchedulerABI'
 import {Contract} from "@ethersproject/contracts";
 import '../App.css'
 import { Button } from "../Button";
 
-interface CreateScheduleProps {
-  account: string | null | undefined,
-  library: any,
-  chainId: number | undefined,
+interface CreateScheduleProps {  
+  contract: Contract | undefined
 }
 
-export const CreateSchedule: FC<CreateScheduleProps> = ({account, library, chainId}) => {  
-  const _chainId: number = chainId == undefined ? 0 : chainId
+export const CreateSchedule: FC<CreateScheduleProps> = ({contract}) => {
 
   const [startDT, setStartDT] = useState<Date|null>()
   const [endDT, setEndDT] = useState<Date|null>()
@@ -23,6 +19,14 @@ export const CreateSchedule: FC<CreateScheduleProps> = ({account, library, chain
   const [successMsg, setSuccessMsg] = useState<string>()
 
   const createSchedule = async () => {
+    //console.log("CreateSchedule.tsx > craeteSchedule(): contract: ", contract)
+    var _contract:Contract
+    if (contract) {
+       _contract = contract
+    } else {
+      return
+    }
+    
     setErrorMsg("")
     setSuccessMsg("")
     if (!imgUrl)
@@ -30,12 +34,6 @@ export const CreateSchedule: FC<CreateScheduleProps> = ({account, library, chain
       setErrorMsg("image URL is empty. You have to set image URL.")
       return
     }      
-
-    const contractAddress = getSceneSchedulerAddress(_chainId)
-    if (contractAddress == '')
-      return;
-
-    const contract = new Contract(contractAddress,  abi, library.getSigner())
 
     var tsStart:number = 0
     var tsEnd:number = 0
@@ -57,21 +55,21 @@ export const CreateSchedule: FC<CreateScheduleProps> = ({account, library, chain
       img: imgUrl
     }
     const dataString = JSON.stringify(dataJson)
-    console.log('dataString', dataString)
+    //console.log('dataString', dataString)
     const dataEncoded = encodeURIComponent(dataString)
-    console.log('dataEncoded', dataEncoded)
+    //console.log('dataEncoded', dataEncoded)
 
     try {
-      const r_feePerSecond = await contract.getFeePerSecond()
-      console.log('r1=')
+      const r_feePerSecond = await _contract.getFeePerSecond()
+      //console.log('r1=')
       console.log(r_feePerSecond)
 
       const feePerSecond = parseInt(r_feePerSecond);      
       const ethWei = (tsEnd - tsStart)*feePerSecond;
-      const r = await contract.createSchedule(tsStart, tsEnd, dataEncoded, {value: ethWei})//.send({from: account, value: ethWei})
-      console.log("call createSchedule()")
+      const r = await _contract.createSchedule(tsStart, tsEnd, dataEncoded, {value: ethWei})
+      //console.log("call createSchedule()")
       console.log(r)
-      setSuccessMsg("Succeded to make reservation!")
+      //setSuccessMsg("Succeded to make reservation!")
     } catch (error) {
       setErrorMsg(""+error)
     }

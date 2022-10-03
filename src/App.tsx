@@ -9,13 +9,18 @@ import { formatEther } from "@ethersproject/units"
 import { BigNumberish } from '@ethersproject/bignumber';
 import { SceneScheduleNow } from "./components/SceneScheduleNow"
 import {CreateSchedule} from './components/CreateSchedule'
+import {ScheduleList} from './components/ScheduleList'
+import {getSceneSchedulerAddress, SceneSchedulerABI as abi} from './abi/SceneSchedulerABI'
+import {Contract} from "@ethersproject/contracts";
 
 function App() {
   const [ethBalance, setEthBalance] = useState<number | undefined>(undefined)
   const [installed, setInstalled] = useState<boolean>(false)
   const [currentDT, setCurrentDT] = useState<string>()
   const { active, account, activate, deactivate, library, chainId } = useWeb3React()
+  const [contract, setContract] = useState<Contract>()
   const provider = library
+  
 
   const injected = new InjectedConnector({
     supportedChainIds: [1, 3, 4, 5, 42]
@@ -40,7 +45,7 @@ function App() {
   };
 
   
-  useEffect(() => {
+  /*useEffect(() => {
     const timer = setInterval(() => {
       const dt = new Date()
       setCurrentDT(dt.toLocaleDateString() + " " + dt.toLocaleTimeString())
@@ -49,9 +54,10 @@ function App() {
     return () => {
       //clearInterval(timer)
     }
-  },[])
+  },[])*/
 
   useEffect(() => {
+    console.log("App.tsx > useEffect[activate]")
     const { ethereum }: any = window;
 
     if (ethereum && ethereum.isMetaMask) {
@@ -74,18 +80,40 @@ function App() {
   }, [activate]);
 
   useEffect(() => {
+    console.log("App.tsx > useEffect[account]")
     if (active && account) {
+      console.log("account: ", account)
       provider?.getBalance(account).then((result: BigNumberish) => {
         setEthBalance(Number(formatEther(result)))
       })
     }
   },[account])
 
+  useEffect(() => {
+    console.log("App.tsx > useEffect[contract]: contract: ", contract)
+  },[contract])
+
+  useEffect(() => {
+    console.log("App.tsx > useEffect[library, chainId]")
+    console.log("library: ", library)
+    console.log("chainId: ", chainId)
+    if (library && chainId)
+    {      
+      const _chainId:number = chainId
+      const contractAddress = getSceneSchedulerAddress(_chainId)
+      console.log("App.tsx > useEffect[library, chainId]: contractAddress?.length", contractAddress?.length)
+      if (contractAddress?.length == 42) {
+        setContract(new Contract(contractAddress, abi, library.getSigner()))
+      }
+    }
+    
+  }, [library, chainId])
+
   const downloadApp = () =>
     window.open(
       "https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn/related?hl=en"
     );
-  
+
   return (
     <div className="App">
       <header className="App-header">
@@ -99,9 +127,11 @@ function App() {
         <DisplayMask active={active} installed={installed} account={account} />
         <div>{currentDT}</div>
         <div className="App"><hr/></div>
-        <CreateSchedule account={account} library={library} chainId={chainId} />
+        {contract ? <CreateSchedule contract={contract} /> : <></>}
         <div className="App"><hr/></div>
-        <SceneScheduleNow library={library} chainId={chainId} />
+        {contract ? <SceneScheduleNow  contract={contract} /> : <></>}
+        <div className="App"><hr/></div>
+        {contract ? <ScheduleList  contract={contract} /> : <></> }        
         <div className="App"><hr/></div>
         <div>ETH: {ethBalance}</div>
         <div>chain id: {chainId}</div>
