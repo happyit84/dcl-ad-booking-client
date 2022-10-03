@@ -7,8 +7,8 @@ interface ScheduleListProps {
 }
 
 interface Schedule {
-  tsStart: number,
-  tsEnd: number,
+  startDT: string,
+  endDT: string,
   booker: string,
   imgUrl: string,
 }
@@ -39,8 +39,8 @@ export const ScheduleList: FC<ScheduleListProps> = ({contract}) => {
             const dataDecoded = decodeURIComponent(s.data)
             const dataJson = JSON.parse(dataDecoded)
             let s2: Schedule = {
-              tsStart: s.startTimestamp, 
-              tsEnd: s.endTimestamp, 
+              startDT: new Date(s.startTimestamp * 1000).toLocaleString(), 
+              endDT: new Date(s.endTimestamp*1000).toLocaleString(), 
               booker: s.booker, 
               imgUrl: dataJson.img
             }            
@@ -64,8 +64,8 @@ export const ScheduleList: FC<ScheduleListProps> = ({contract}) => {
         <ol>
           {schedules?.map((s) => (
             <li>
-              <MultiDiv>
-                {/*from: {s.tsStart}, to: {s.tsEnd}, booker: {s.booker}, <a href={s.imgUrl}></a>*/}
+              <MultiDiv>                
+                <div>{s.startDT} ~ {s.endDT} [{s.booker}] <a href={s.imgUrl} target="_blank"> See image</a></div>                
               </MultiDiv>
             </li>))
           }
