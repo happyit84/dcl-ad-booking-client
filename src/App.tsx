@@ -86,8 +86,18 @@ function App() {
       provider?.getBalance(account).then((result: BigNumberish) => {
         setEthBalance(Number(formatEther(result)))
       })
+
+      /*if (library && chainId)
+      {      
+        const _chainId:number = chainId
+        const contractAddress = getSceneSchedulerAddress(_chainId)
+        console.log("App.tsx > useEffect[library, chainId]: contractAddress?.length", contractAddress?.length)
+        if (contractAddress?.length == 42) {
+          setContract(new Contract(contractAddress, abi, library.getSigner()))
+        }
+      }*/
     }
-  },[account])
+  },[account/*, library, chainId*/])
 
   useEffect(() => {
     console.log("App.tsx > useEffect[contract]: contract: ", contract)
@@ -131,7 +141,7 @@ function App() {
         <div className="App"><hr/></div>
         {contract ? <SceneScheduleNow  contract={contract} /> : <></>}
         <div className="App"><hr/></div>
-        {contract ? <ScheduleList  contract={contract} /> : <></> }        
+        {contract ? <ScheduleList  contract={contract} account={account}/> : <></> }        
         <div className="App"><hr/></div>
         <div>ETH: {ethBalance}</div>
         <div>chain id: {chainId}</div>
