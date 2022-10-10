@@ -1,20 +1,12 @@
 import {FC, useEffect, useState} from 'react'
 import MultiDiv from './MultiDiv'
 import {Contract} from "@ethersproject/contracts";
+import {Schedule} from './types'
+import { ModifySchedule } from './ModifySchedule';
 
 interface ScheduleListProps {
   contract: Contract | undefined,
   account: string | null | undefined
-}
-
-interface Schedule {
-  id: number,
-  startTS: number,
-  startDT: string,
-  endTS: number,
-  endDT: string,  
-  booker: string,
-  imgUrl: string,
 }
 
 export const ScheduleList: FC<ScheduleListProps> = ({contract, account}) => {
@@ -40,12 +32,15 @@ export const ScheduleList: FC<ScheduleListProps> = ({contract, account}) => {
         const dataJson = JSON.parse(dataDecoded)
         let s2: Schedule = {
           id: r[i],
+          index: i,
           startTS: s.startTimestamp,
           startDT: new Date(s.startTimestamp * 1000).toLocaleString(), 
           endTS: s.endTimestamp,
           endDT: new Date(s.endTimestamp*1000).toLocaleString(), 
           booker: s.booker, 
-          imgUrl: dataJson.img
+          imgUrl: dataJson.img,
+          paidEth: s.paidEth,
+          onModify: false,
         }            
         schedules2.push(s2)            
       }
@@ -58,9 +53,9 @@ export const ScheduleList: FC<ScheduleListProps> = ({contract, account}) => {
 
   function isPresentSchedule(s:Schedule) {
     const tsNow = new Date().getTime()
-    console.log("ScheduleList.tsx > isPresentSchedule() > startTS=", s.startTS*1000, ", endTS=", s.endTS*1000, ", tsNow=", tsNow)
+    //console.log("ScheduleList.tsx > isPresentSchedule() > startTS=", s.startTS*1000, ", endTS=", s.endTS*1000, ", tsNow=", tsNow)
     const r = (s.startTS*1000 <= tsNow && tsNow < s.endTS*1000)
-    console.log("ScheduleList.tsx > isPresentSchedule() > r=", r)
+    //console.log("ScheduleList.tsx > isPresentSchedule() > r=", r)
     return r
   }
 
@@ -89,6 +84,17 @@ export const ScheduleList: FC<ScheduleListProps> = ({contract, account}) => {
     }
   }
 
+  function modifySchedule(s: Schedule) {
+    //console.log("ScheduleList.tsx > modifySchedule() > 1")
+    if (schedules) {
+      //console.log("ScheduleList.tsx > modifySchedule() > 2")      
+      schedules[s.index].onModify = true
+      //console.log(schedules)
+      const schedules2 = [...schedules]
+      setSchedules(schedules2)
+    }
+  }
+
   return (
     <div className="w80">
       <MultiDiv>
@@ -96,11 +102,16 @@ export const ScheduleList: FC<ScheduleListProps> = ({contract, account}) => {
         <ol>
           {schedules?.map((s) => (
             <li>
-              <MultiDiv>                
-                <div>
-                  {s.startDT} ~ {s.endDT} [{s.booker.substring(0,6) + "..." + s.booker.substring(38, 42)}] [<a href={s.imgUrl} target="_blank">see image</a>] 
-                  {accountUpperCase == s.booker.toUpperCase() && !isPresentSchedule(s) ? (<button onClick={(event:any) => cancelSchedule(s)}>cancel</button>) : <></>}
-                </div>
+              <MultiDiv>
+                {s.onModify ?
+                  <ModifySchedule contract={contract} oldSchedule={s} />
+                : 
+                  <div>
+                    {s.startDT} ~ {s.endDT} [{s.booker.substring(0,6) + "..." + s.booker.substring(38, 42)}] [<a href={s.imgUrl} target="_blank">see image</a>] 
+                    {accountUpperCase == s.booker.toUpperCase() ? (<button onClick={(event:any) => modifySchedule(s)}>modify</button>) : <></>}
+                    {accountUpperCase == s.booker.toUpperCase() && !isPresentSchedule(s) ? (<button onClick={(event:any) => cancelSchedule(s)}>cancel</button>) : <></>}                    
+                  </div>
+                }                
               </MultiDiv>
             </li>))
           }
