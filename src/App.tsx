@@ -12,6 +12,7 @@ import {CreateSchedule} from './components/CreateSchedule'
 import {ScheduleList} from './components/ScheduleList'
 import {getSceneSchedulerAddress, SceneSchedulerABI as abi} from './abi/SceneSchedulerABI'
 import {Contract} from "@ethersproject/contracts";
+import { Provider } from '@ethersproject/providers';
 
 function App() {
   const [ethBalance, setEthBalance] = useState<number | undefined>(undefined)
@@ -19,7 +20,7 @@ function App() {
   const [currentDT, setCurrentDT] = useState<string>()
   const { active, account, activate, deactivate, library, chainId } = useWeb3React()
   const [contract, setContract] = useState<Contract>()
-  const provider = library
+  const provider:Provider = library
   
 
   const injected = new InjectedConnector({
@@ -137,7 +138,7 @@ function App() {
         <DisplayMask active={active} installed={installed} account={account} />
         <div>{currentDT}</div>
         <div className="App"><hr/></div>
-        {contract ? <CreateSchedule contract={contract} /> : <></>}
+        {contract ? <CreateSchedule provider={provider} contract={contract} /> : <></>}
         <div className="App"><hr/></div>
         {contract ? <SceneScheduleNow  contract={contract} /> : <></>}
         <div className="App"><hr/></div>

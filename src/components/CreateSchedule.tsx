@@ -5,12 +5,14 @@ import 'react-datepicker/dist/react-datepicker.css'
 import {Contract} from "@ethersproject/contracts";
 import '../App.css'
 import { Button } from "../Button";
+import { Provider } from '@ethersproject/providers';
 
-interface CreateScheduleProps {  
+interface CreateScheduleProps {
+  provider: Provider, 
   contract: Contract | undefined
 }
 
-export const CreateSchedule: FC<CreateScheduleProps> = ({contract}) => {
+export const CreateSchedule: FC<CreateScheduleProps> = ({provider, contract}) => {
 
   const [startDT, setStartDT] = useState<Date|null>()
   const [endDT, setEndDT] = useState<Date|null>()
@@ -67,9 +69,15 @@ export const CreateSchedule: FC<CreateScheduleProps> = ({contract}) => {
       const feePerSecond = parseInt(r_feePerSecond);      
       const ethWei = (tsEnd - tsStart)*feePerSecond;
       const r = await _contract.createSchedule(tsStart, tsEnd, dataEncoded, {value: ethWei})
-      //console.log("call createSchedule()")
+      console.log("call createSchedule()")
       console.log(r)
-      //setSuccessMsg("Succeded to make reservation!")
+      console.log("transaction hash: ", r.hash)
+      setSuccessMsg("Waiting util transaction is done.")
+      const waitResult = await provider.waitForTransaction(r.hash)
+      console.log("wait result: ", waitResult)
+      const receipt = await provider.getTransactionReceipt(r.hash)
+      console.log("receit: ", receipt)
+      setSuccessMsg("Succeded to make reservation!")
     } catch (error) {
       setErrorMsg(""+error)
     }
