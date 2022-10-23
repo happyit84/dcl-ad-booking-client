@@ -5,14 +5,15 @@ import 'react-datepicker/dist/react-datepicker.css'
 import {Contract} from "@ethersproject/contracts";
 import '../App.css'
 import { Button } from "../Button";
-import { Schedule } from "./types"
+import { Schedule, UpdateScheduleListFunc } from "./types"
 
 interface ModifyScheduleProps {  
   contract: Contract | undefined,
-  oldSchedule: Schedule
+  oldSchedule: Schedule,
+  updateScheduleList: UpdateScheduleListFunc,
 }
 
-export const ModifySchedule: FC<ModifyScheduleProps> = ({contract, oldSchedule}) => {
+export const ModifySchedule: FC<ModifyScheduleProps> = ({contract, oldSchedule, updateScheduleList}) => {
 
   const [startDT, setStartDT] = useState<Date|null>()
   const [endDT, setEndDT] = useState<Date|null>()
@@ -79,6 +80,7 @@ export const ModifySchedule: FC<ModifyScheduleProps> = ({contract, oldSchedule})
       //console.log("call createSchedule()")
       console.log(r)
       //setSuccessMsg("Succeded to make reservation!")
+      updateScheduleList()
     } catch (error) {
       setErrorMsg(""+error)
     }

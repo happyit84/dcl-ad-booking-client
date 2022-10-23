@@ -6,10 +6,12 @@ import {Contract} from "@ethersproject/contracts";
 import '../App.css'
 import { Button } from "../Button";
 import { Provider } from '@ethersproject/providers';
+import { UpdateScheduleListFunc } from './types'
 
 interface CreateScheduleProps {
   provider: Provider, 
-  contract: Contract | undefined
+  contract: Contract | undefined,
+  updateScheduleList: UpdateScheduleListFunc,
 }
 
 export const CreateSchedule: FC<CreateScheduleProps> = ({provider, contract}) => {

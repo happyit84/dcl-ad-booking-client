@@ -9,4 +9,7 @@ export interface Schedule {
   imgUrl: string,
   paidEth: number,
   onModify: boolean,
+  errorMsg: string,
 }
+
+export type UpdateScheduleListFunc = () => void

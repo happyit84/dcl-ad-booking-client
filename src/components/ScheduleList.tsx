@@ -1,21 +1,24 @@
 import {FC, useEffect, useState} from 'react'
 import MultiDiv from './MultiDiv'
 import {Contract} from "@ethersproject/contracts";
-import {Schedule} from './types'
+import { Schedule, UpdateScheduleListFunc } from './types'
 import { ModifySchedule } from './ModifySchedule';
 
 interface ScheduleListProps {
   contract: Contract | undefined,
-  account: string | null | undefined
+  account: string | null | undefined,
+  schedules: Array<Schedule> | undefined,
+  errorMsg: string,
+  updateScheduleList: UpdateScheduleListFunc
 }
 
-export const ScheduleList: FC<ScheduleListProps> = ({contract, account}) => {
-  const [errorMsg, setErrorMsg] = useState<string>()
-  const [schedules, setSchedules] = useState<Array<Schedule>>()
+export const ScheduleList: FC<ScheduleListProps> = ({contract, account, schedules, errorMsg, updateScheduleList}) => {
+  const [_errorMsg, setErrorMsg] = useState<string>()
+  const [_schedules, setSchedules] = useState<Array<Schedule>>(new Array<Schedule>)
   const [accountUpperCase, setAccountUpperCase] = useState<string>()
   const _contract = contract
 
-  const updateScheduleList = async () => {
+  /*const updateScheduleList = async () => {
     var tsNow = Math.floor(new Date().getTime() / 1000)
     tsNow = tsNow - (tsNow % 3600)
     const tsMonthLater = tsNow + 60*60*24*7
@@ -49,7 +52,7 @@ export const ScheduleList: FC<ScheduleListProps> = ({contract, account}) => {
     } catch (e) {
       setErrorMsg(""+e)
     }
-  }
+  }*/
 
   function isPresentSchedule(s:Schedule) {
     const tsNow = new Date().getTime()
@@ -64,10 +67,13 @@ export const ScheduleList: FC<ScheduleListProps> = ({contract, account}) => {
     //if (account)
       setAccountUpperCase(account ? account.toUpperCase() : "")
     console.log("ScheduleList.tsx > useEffect[] > _accountUpperCase: ", accountUpperCase)
-    setErrorMsg("")    
+    setErrorMsg("")
+    if (errorMsg)
+      setErrorMsg(errorMsg)
+    
     if (contract) {
       //console.log("ScheduleList.tsx > useEffect[] 2")
-      updateScheduleList()
+      //updateSchedule()
     }
   },[])
 
@@ -79,12 +85,13 @@ export const ScheduleList: FC<ScheduleListProps> = ({contract, account}) => {
 
     try {
       _contract?.removeSchedule(s.id)
+      updateScheduleList()
     } catch (e) {
       window.alert(""+e)
     }
   }
 
-  function modifySchedule(s: Schedule) {
+  function showModifyUI(s: Schedule) {
     //console.log("ScheduleList.tsx > modifySchedule() > 1")
     if (schedules) {
       //console.log("ScheduleList.tsx > modifySchedule() > 2")      
@@ -92,6 +99,7 @@ export const ScheduleList: FC<ScheduleListProps> = ({contract, account}) => {
       //console.log(schedules)
       const schedules2 = [...schedules]
       setSchedules(schedules2)
+      updateScheduleList()
     }
   }
 
@@ -104,12 +112,12 @@ export const ScheduleList: FC<ScheduleListProps> = ({contract, account}) => {
             <li>
               <MultiDiv>
                 {s.onModify ?
-                  <ModifySchedule contract={contract} oldSchedule={s} />
-                : 
+                  <ModifySchedule contract={contract} oldSchedule={s} updateScheduleList={updateScheduleList} />
+                :
                   <div>
-                    {s.startDT} ~ {s.endDT} [{s.booker.substring(0,6) + "..." + s.booker.substring(38, 42)}] [<a href={s.imgUrl} target="_blank">see image</a>] 
-                    {accountUpperCase == s.booker.toUpperCase() ? (<button onClick={(event:any) => modifySchedule(s)}>modify</button>) : <></>}
-                    {accountUpperCase == s.booker.toUpperCase() && !isPresentSchedule(s) ? (<button onClick={(event:any) => cancelSchedule(s)}>cancel</button>) : <></>}                    
+                    {s.startDT} ~ {s.endDT} [{s.booker.substring(0,6) + "..." + s.booker.substring(38, 42)}] [<a href={s.imgUrl} target="_blank">see image</a>]
+                    {accountUpperCase == s.booker.toUpperCase() ? (<button onClick={(event:any) => showModifyUI(s)}>modify</button>) : <></>}
+                    {accountUpperCase == s.booker.toUpperCase() && !isPresentSchedule(s) ? (<button onClick={(event:any) => cancelSchedule(s)}>cancel</button>) : <></>}
                   </div>
                 }                
               </MultiDiv>
