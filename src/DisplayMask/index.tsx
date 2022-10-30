@@ -19,7 +19,7 @@ const conditionMessage = (
       Accounts: <b>{account}</b>
     </span>
   ) : (
-    <span>No connection</span>
+    <span>No connection. Please connect to Metamask.</span>
   );
 };
 
