@@ -177,6 +177,7 @@ function App() {
         <div className="App"><hr/></div>
         <div>ETH: {ethBalance}</div>
         <div>chain id: {chainId}</div>
+        <div className='error'>Only <b>Goerli test network</b>(chain id=5) is available now.</div>
       </header>
     </div>
   );
