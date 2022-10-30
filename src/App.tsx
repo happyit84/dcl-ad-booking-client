@@ -46,7 +46,9 @@ function App() {
     }
   };
 
-  const updateScheduleList = async () => {
+  const updateScheduleList:UpdateScheduleListFunc = async () => {
+    console.log("App.tsx > updateScheduleList()")
+    
     var tsNow = Math.floor(new Date().getTime() / 1000)
     tsNow = tsNow - (tsNow % 3600)
     const tsMonthLater = tsNow + 60*60*24*7
@@ -72,16 +74,18 @@ function App() {
           imgUrl: dataJson.img,
           paidEth: s.paidEth,
           onModify: false,
+          successMsg: '',
           errorMsg: '',
         }            
         schedules2.push(s2)            
       }
       setSchedules(schedules2)
-      //console.log(schedules)
     } catch (e) {
       scheduleListErrorMsg = ""+e
     }
   }
+
+  
 
   useEffect(() => {
     console.log("App.tsx > useEffect[activate]")
@@ -128,6 +132,7 @@ function App() {
 
   useEffect(() => {
     console.log("App.tsx > useEffect[contract]: contract: ", contract)
+    updateScheduleList()
   },[contract])
 
   useEffect(() => {
@@ -141,7 +146,6 @@ function App() {
       console.log("App.tsx > useEffect[library, chainId]: contractAddress?.length", contractAddress?.length)
       if (contractAddress?.length === 42) {
         setContract(new Contract(contractAddress, abi, library.getSigner()))
-        updateScheduleList()
       }
     }
     
@@ -167,9 +171,9 @@ function App() {
         <div className="App"><hr/></div>
         {contract ? <CreateSchedule provider={provider} contract={contract} updateScheduleList={updateScheduleList} /> : <></>}
         <div className="App"><hr/></div>
-        {contract ? <SceneScheduleNow  contract={contract} /> : <></>}
+        {contract ? <ScheduleList provider={provider}  contract={contract} account={account} schedules={schedules} errorMsg={scheduleListErrorMsg} updateScheduleList={updateScheduleList}/> : <>Loading...</> }
         <div className="App"><hr/></div>
-        {contract ? <ScheduleList  contract={contract} account={account} schedules={schedules} errorMsg={scheduleListErrorMsg} updateScheduleList={updateScheduleList}/> : <></> }
+        {contract ? <SceneScheduleNow  contract={contract} /> : <>Loading...</>}
         <div className="App"><hr/></div>
         <div>ETH: {ethBalance}</div>
         <div>chain id: {chainId}</div>

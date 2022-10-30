@@ -6,14 +6,16 @@ import {Contract} from "@ethersproject/contracts";
 import '../App.css'
 import { Button } from "../Button";
 import { Schedule, UpdateScheduleListFunc } from "./types"
+import { Provider } from '@ethersproject/providers'
 
-interface ModifyScheduleProps {  
+interface ModifyScheduleProps {
+  provider: Provider, 
   contract: Contract | undefined,
   oldSchedule: Schedule,
   updateScheduleList: UpdateScheduleListFunc,
 }
 
-export const ModifySchedule: FC<ModifyScheduleProps> = ({contract, oldSchedule, updateScheduleList}) => {
+export const ModifySchedule: FC<ModifyScheduleProps> = ({provider, contract, oldSchedule, updateScheduleList}) => {
 
   const [startDT, setStartDT] = useState<Date|null>()
   const [endDT, setEndDT] = useState<Date|null>()
@@ -76,10 +78,13 @@ export const ModifySchedule: FC<ModifyScheduleProps> = ({contract, oldSchedule, 
       const feePerSecond = parseInt(r_feePerSecond);      
       let ethWei = ((tsEnd - tsStart)*feePerSecond) - oldSchedule.paidEth;
       if (ethWei < 0 ) ethWei = 0
+      setSuccessMsg("Waiting for confirmation...")
       const r = await _contract.modifySchedule(oldSchedule.id, tsStart, tsEnd, dataEncoded, {value: ethWei})
-      //console.log("call createSchedule()")
       console.log(r)
-      //setSuccessMsg("Succeded to make reservation!")
+      setSuccessMsg("Waiting until transaction is done...")
+      const waitResult = await provider.waitForTransaction(r.hash)
+      console.log("wait result: ", waitResult)
+      setSuccessMsg("Succeded to modify reservation!")
       updateScheduleList()
     } catch (error) {
       setErrorMsg(""+error)

@@ -9,6 +9,7 @@ export interface Schedule {
   imgUrl: string,
   paidEth: number,
   onModify: boolean,
+  successMsg: string,
   errorMsg: string,
 }
 

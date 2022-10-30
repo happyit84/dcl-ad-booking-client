@@ -2,10 +2,10 @@ import {FC, useState, useEffect} from 'react'
 import MultiDiv from './MultiDiv'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import {Contract} from "@ethersproject/contracts";
+import {Contract} from "@ethersproject/contracts"
 import '../App.css'
-import { Button } from "../Button";
-import { Provider } from '@ethersproject/providers';
+import { Button } from "../Button"
+import { Provider } from '@ethersproject/providers'
 import { UpdateScheduleListFunc } from './types'
 
 interface CreateScheduleProps {
@@ -14,7 +14,7 @@ interface CreateScheduleProps {
   updateScheduleList: UpdateScheduleListFunc,
 }
 
-export const CreateSchedule: FC<CreateScheduleProps> = ({provider, contract}) => {
+export const CreateSchedule: FC<CreateScheduleProps> = ({provider, contract, updateScheduleList}) => {
 
   const [startDT, setStartDT] = useState<Date|null>()
   const [endDT, setEndDT] = useState<Date|null>()
@@ -67,19 +67,20 @@ export const CreateSchedule: FC<CreateScheduleProps> = ({provider, contract}) =>
       const r_feePerSecond = await _contract.getFeePerSecond()
       //console.log('r1=')
       console.log(r_feePerSecond)
-
       const feePerSecond = parseInt(r_feePerSecond);      
       const ethWei = (tsEnd - tsStart)*feePerSecond;
+      setSuccessMsg("Waiting for confirmation...")
       const r = await _contract.createSchedule(tsStart, tsEnd, dataEncoded, {value: ethWei})
       console.log("call createSchedule()")
       console.log(r)
       console.log("transaction hash: ", r.hash)
-      setSuccessMsg("Waiting util transaction is done.")
+      setSuccessMsg("Waiting until transaction is done...")
       const waitResult = await provider.waitForTransaction(r.hash)
       console.log("wait result: ", waitResult)
       const receipt = await provider.getTransactionReceipt(r.hash)
       console.log("receit: ", receipt)
       setSuccessMsg("Succeded to make reservation!")
+      updateScheduleList()
     } catch (error) {
       setErrorMsg(""+error)
     }
